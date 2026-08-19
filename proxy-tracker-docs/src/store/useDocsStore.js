@@ -2,59 +2,32 @@ import { api } from "../utils/api";
 import { create } from "zustand";
 
 export const useDocsStore = create((set) => ({
-  scrapedoDocs: [],
-  scraperDocs: [],
+  // Unified state
+  docsData: [],
+  loading: false,
+  error: null,
 
-  scrapedoLoading: false,
-  scraperLoading: false,
-
-  scrapedoError: null,
-  scraperError: null,
-
-  // SCRAPEDO
-  fetchScrapedoDocs: async () => {
+  // Unified fetch action
+  fetchDocs: async () => {
     try {
       set({
-        scrapedoLoading: true,
-        scrapedoError: null,
+        loading: true,
+        error: null,
       });
 
-      const res = await api.get("/api/docs/scrapedo");
+      // TODO: Update this endpoint to match your new unified backend route 
+      // (e.g., "/api/docs" or "/api/docs/proxy")
+      const res = await api.get("/api/docs");
 
       set({
-        scrapedoDocs: res.data || [],
-        scrapedoLoading: false,
+        docsData: res.data || [],
+        loading: false,
       });
     } catch (err) {
       set({
-        scrapedoDocs: [],
-        scrapedoLoading: false,
-        scrapedoError:
-          err.response?.data?.detail || "Failed to fetch Scrapedo docs",
-      });
-    }
-  },
-
-  // SCRAPER
-  fetchScraperDocs: async () => {
-    try {
-      set({
-        scraperLoading: true,
-        scraperError: null,
-      });
-
-      const res = await api.get("/api/docs/scraper");
-
-      set({
-        scraperDocs: res.data || [],
-        scraperLoading: false,
-      });
-    } catch (err) {
-      set({
-        scraperDocs: [],
-        scraperLoading: false,
-        scraperError:
-          err.response?.data?.detail || "Failed to fetch Scraper docs",
+        docsData: [],
+        loading: false,
+        error: err.response?.data?.detail || "Failed to fetch documentation",
       });
     }
   },

@@ -18,9 +18,7 @@ const StatusCodesPage = () => {
         'Invalid target URL',
         'Invalid setCookies: <error>',
         'Invalid HTTP method',
-        'Provide only one API key header: scrapedo-key OR scraper-api-key',
-        'invalid ScraperAPI config: <json error>',
-        'invalid Scrape.do config: <json error>',
+        'invalid config: <json error>',
         'premium and ultra_premium cannot be used together',
         'unsupported proxyName: <name>'
       ]
@@ -31,7 +29,7 @@ const StatusCodesPage = () => {
       color: 'text-red-500',
       bgColor: darkMode ? 'bg-red-900/10 border-red-800/50' : 'bg-red-50/80 border-red-200',
       messages: [
-        'Missing required header: scrapedo-key or scraper-api-key',
+        'Missing required header: api-key',
         'Invalid API key'
       ]
     },
@@ -42,7 +40,7 @@ const StatusCodesPage = () => {
       bgColor: darkMode ? 'bg-rose-900/10 border-rose-800/50' : 'bg-rose-50/80 border-rose-200',
       messages: [
         "API key not authorized for proxy type '<proxyName>'",
-        'Scrapedo key is inactive'
+        'API key is inactive'
       ]
     },
     {
@@ -112,12 +110,12 @@ const StatusCodesPage = () => {
           </p>
         </div>
 
-        {/* Status Codes Grid (2 Columns on Desktop) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        {/* Status Codes Masonry Layout (Eliminates vertical gaps) */}
+        <div className="columns-1 md:columns-2 mb-12">
           {statusCodes.map((status) => (
             <div
               key={status.code}
-              className={`rounded-2xl border p-6 transition-all hover:shadow-xl hover:-translate-y-1 ${status.bgColor}`}
+              className={`rounded-2xl border p-6 transition-all hover:shadow-xl hover:-translate-y-1 mb-6 break-inside-avoid ${status.bgColor}`}
             >
               {/* Card Header */}
               <div className="flex items-center justify-between mb-5">

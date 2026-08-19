@@ -1,5 +1,4 @@
-import { ArrowLeft, Search } from 'lucide-react';
-import { ChevronRight } from 'lucide-react';
+import { ArrowLeft, Search, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 
 export const Sidebar = ({
@@ -12,40 +11,28 @@ export const Sidebar = ({
 }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
-    const PRODUCT_META = {
-        scrapedo: {
-            title: 'Scrapedo'
-        },
-        scraper: {
-            title: 'Scraper API'
-        }
-    };
-
-    const pathname = location.pathname;
-    const validProduct = pathname.includes('scraper') ? 'scraper' : 'scrapedo';
-    const meta = PRODUCT_META[validProduct];
-
     const filteredItems = (items || []).filter((item) => {
         const fullText = `${item.section}. ${item.title}`.toLowerCase();
         return fullText.includes(searchQuery.toLowerCase());
     });
 
     return (
-        <aside className={`w-64 border-r ${darkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'} flex flex-col`}>
+        <aside className={`w-74 border-r ${darkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'} flex flex-col`}>
 
             {/* Logo + Back */}
             <div className={`p-5 border-b ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
                 <div className="flex items-center gap-3">
                     <button
-                        className="p-2 bg-gray-800 rounded-lg cursor-pointer text-gray-200 hover:bg-gray-700"
+                        className="p-2 bg-gray-800 rounded-lg cursor-pointer text-gray-200 hover:bg-gray-700 transition-colors"
                         onClick={onBack}
                         type="button"
+                        aria-label="Go back"
                     >
                         <ArrowLeft size={16} />
                     </button>
                     <div>
-                        <h1 className="font-bold text-sm">{meta.title}</h1>
-                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>API Docs</p>
+                        <h1 className="font-bold text-sm">Actowiz Proxy Hub</h1>
+                        <p className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>API Documentation</p>
                     </div>
                 </div>
             </div>
@@ -73,9 +60,6 @@ export const Sidebar = ({
 
             {/* Nav Items */}
             <nav className="flex-1 p-3 overflow-y-auto">
-                {/* <p className={`text-xs font-semibold uppercase tracking-wider mb-2 px-2 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
-                    Endpoints
-                </p> */}
                 <ul className="space-y-1">
                     {filteredItems.length > 0 ? (
                         filteredItems.map((item) => {
@@ -89,7 +73,7 @@ export const Sidebar = ({
                                         title={fullText}
                                         className={`cursor-pointer w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2
                                             ${isActive
-                                                ? `${darkMode ? 'bg-blue-600/20 text-blue-400' : 'bg-gray-600/20 text-gray-800'} border-l-2 ${darkMode ? 'border-blue-500' : 'border-gray-800'}`
+                                                ? `${darkMode ? 'bg-blue-600/20 text-blue-400' : 'bg-blue-50 text-blue-700'} border-l-2 ${darkMode ? 'border-blue-500' : 'border-blue-600'}`
                                                 : `${darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-800 border-l-2 border-transparent' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 border-l-2 border-transparent'}`
                                             }`}
                                     >
@@ -102,7 +86,7 @@ export const Sidebar = ({
                             );
                         })
                     ) : (
-                        <li className={`px-3 py-2 text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                        <li className={`px-3 py-4 text-center text-sm ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
                             No results found
                         </li>
                     )}
@@ -113,7 +97,7 @@ export const Sidebar = ({
             <div className={`p-3 border-t ${darkMode ? 'border-gray-800' : 'border-gray-200'}`}>
                 <button
                     onClick={onToggleTheme}
-                    className={`cursor-pointer w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors
+                    className={`cursor-pointer w-full px-3 py-2 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-2
                         ${darkMode ? 'bg-gray-800 hover:bg-gray-700 text-gray-200' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
                 >
                     {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}

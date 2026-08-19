@@ -1,7 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import DocsOverview from '../pages/DocsOverview';
-import ProductOverview from '../pages/ProductOverview';
 import ProxyDocs from '../pages/ProxyDocs';
 import StatusCodesPage from '../pages/StatusCodesPage';
 
@@ -12,35 +11,19 @@ export default function AppRouter() {
                 {/* Root overview */}
                 <Route path="/act-proxyhub/userguide" element={<DocsOverview />} />
 
+                {/* Specific documentation detail page (no product slug needed) */}
                 <Route
-                    path="/act-proxyhub/userguide/scrapedo-overview"
-                    element={<ProductOverview />}
-                />
-                <Route
-                    path="/act-proxyhub/userguide/scraper-overview"
-                    element={<ProductOverview />}
-                />
-
-                <Route
-                    path="/act-proxyhub/userguide/details/:product"
-                    element={
-                        <Navigate
-                            to="/details/scrapedo/1"
-                            replace
-                        />
-                    }
-                />
-                <Route
-                    path="/act-proxyhub/userguide/details/:product/:id"
+                    path="/act-proxyhub/userguide/details/:id"
                     element={<ProxyDocs />}
                 />
 
-                 <Route
+                {/* Status Codes */}
+                <Route
                     path="/act-proxyhub/userguide/status-codes"
                     element={<StatusCodesPage />}
                 />
 
-                {/* Fallback */}
+                {/* Fallback: Redirect any unknown routes to the root overview */}
                 <Route
                     path="*"
                     element={
