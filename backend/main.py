@@ -1,13 +1,12 @@
-from fastapi import FastAPI, HTTPException, Path
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from dotenv import load_dotenv
-from typing import Literal
 
 load_dotenv()
 
-app = FastAPI(title="Scrapedo Docs API")
+app = FastAPI(title="Actowiz Proxy Hub Docs API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,15 +16,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME")
-
-# Map product slug → MongoDB collection name
-PRODUCT_TO_COLLECTION = {
-    "scrapedo": "scrapedo_post_docs",
-    "scraper": "scraperapi_post_docs"
-}
+# Use a single, unified collection name for all proxy hub documentation
+COLLECTION_NAME = os.getenv("DOCS_COLLECTION_NAME", "proxy_hub_docs")
 
 client = AsyncIOMotorClient(MONGO_URI)
 db = client[DB_NAME]
@@ -39,50 +33,37 @@ async def startup_db():
 async def shutdown_db():
     client.close()
 
-def get_collection_name(product: str) -> str:
-    """Validate product and return collection name"""
-    if product not in PRODUCT_TO_COLLECTION:
-        raise HTTPException(
-            status_code=400, 
-            detail=f"Invalid product: {product}. Use 'scrapedo' or 'scraper'"
-        )
-    return PRODUCT_TO_COLLECTION[product]
-
-@app.get("/api/docs/{product}")
-async def get_docs(product: Literal["scrapedo", "scraper"] = Path(...)):
-    """Fetch all docs for a product"""
+@app.get("/api/docs")
+async def get_all_docs():
+    """Fetch all unified proxy hub documentation"""
     try:
-        collection_name = get_collection_name(product)
-        cursor = db[collection_name].find().sort("section", 1)
+        cursor = db[COLLECTION_NAME].find().sort("section", 1)
         docs = await cursor.to_list(length=None)
+        
+        # Convert ObjectId to string for JSON serialization
         for doc in docs:
             doc["_id"] = str(doc["_id"])
+            
         return docs
-    except HTTPException:
-        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to fetch documentation: {str(e)}")
 
-@app.get("/api/docs/{product}/{section_id}")
-async def get_single_doc(
-    product: Literal["scrapedo", "scraper"] = Path(...),
-    section_id: int = Path(...)
-):
-    """Fetch single doc by section ID for a product"""
+@app.get("/api/docs/{section_id}")
+async def get_single_doc(section_id: int):
+    """Fetch a single documentation section by ID (optional optimization)"""
     try:
-        collection_name = get_collection_name(product)
-        doc = await db[collection_name].find_one({"section": section_id})
+        doc = await db[COLLECTION_NAME].find_one({"section": section_id})
         if not doc:
             raise HTTPException(
                 status_code=404, 
-                detail=f"Section {section_id} not found for product '{product}'"
+                detail=f"Section {section_id} not found"
             )
         doc["_id"] = str(doc["_id"])
         return doc
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to fetch section: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
@@ -91,5 +72,5 @@ if __name__ == "__main__":
         "main:app",
         host="0.0.0.0",
         port=8000,
-        reload=False
+        reload=True # Set to True for local development
     )
